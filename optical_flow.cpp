@@ -24,7 +24,10 @@ public:
         data_points_mutex.lock();
         FlowData ret_val = data_points.front();
         data_points.pop();
+        if (data_points.empty())
+            atomic_flag_clear(ready);
         data_points_mutex.unlock();
+
         return ret_val;
     }
     
