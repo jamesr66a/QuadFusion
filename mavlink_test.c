@@ -14,8 +14,7 @@ void sig_handler(int signal){
     exit(0);
 }
 
-int
-set_interface_attribs (int fd, int speed, int parity)
+int set_interface_attribs (int fd, int speed, int parity)
 {
         struct termios tty;
         memset (&tty, 0, sizeof tty);
