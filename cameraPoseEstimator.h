@@ -53,7 +53,7 @@ public:
   CameraPoseEstimator();
 //  ~CameraPoseEstimator();
 
-  static void continuousRead(CameraPoseEstimator*);
+  void continuousRead();
   bool dataAvailable();
   void getPose(Pose3D&);
 /*  int getRawPose(Pose3D&);
@@ -358,14 +358,14 @@ void CameraPoseEstimator::registerUnknownTags(vector<CandidateTag*>& unknownTags
   }       
 }
 
-void CameraPoseEstimator::continuousRead(CameraPoseEstimator* camPose){
+void CameraPoseEstimator::continuousRead(){
   for(;;) {
     Pose3D pose;
     Mat img;
     vector<CandidateTag*> candidateTags, knownTags, unknownTags;
-    camPose->getImage(img);
-    camPose->findCandidateTags(candidateTags, img);
-    camPose->filterTags(knownTags, unknownTags, candidateTags);
+    this->getImage(img);
+    this->findCandidateTags(candidateTags, img);
+    this->filterTags(knownTags, unknownTags, candidateTags);
 
     Mat r0, t0;
     if(knownTags.size() > 0) {
@@ -373,16 +373,16 @@ void CameraPoseEstimator::continuousRead(CameraPoseEstimator* camPose){
       t0 = knownTags[0]->tp;
 
       // add unknown tags to square pattern handler
-      camPose->registerUnknownTags(unknownTags, r0, t0);
+      this->registerUnknownTags(unknownTags, r0, t0);
 
       Mat R;
       Rodrigues(r0, R);
       find3DPose(R, t0, pose);
 
-      camPose->listAccess.lock();
-      camPose->poseList.push_back(pose);
-      camPose->hasNewData = true;
-      camPose->listAccess.unlock();
+      this->listAccess.lock();
+      this->poseList.push_back(pose);
+      this->hasNewData = true;
+      this->listAccess.unlock();
 
 //      std::cout << "cam pose: " << r0 << " " << t0 << std::endl;
     }
